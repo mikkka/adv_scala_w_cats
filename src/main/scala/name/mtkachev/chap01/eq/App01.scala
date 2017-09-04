@@ -2,7 +2,7 @@ package name.mtkachev.chap01.eq
 
 import cats.Eq
 import cats.syntax.eq._
-import cats.instances.option.catsKernelStdEqForOption
+import cats.instances.option._
 
 object App01 extends App {
   implicit val catEqual = Eq.instance[Cat] { (cat1, cat2) =>
@@ -21,4 +21,7 @@ object App01 extends App {
 
   println(cat1 === cat2)
   println(optionCat1 === optionCat2)
+
+  println(cat1 === cat1)
+  println(optionCat1 === optionCat1)
 }

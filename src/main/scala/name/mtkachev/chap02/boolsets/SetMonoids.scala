@@ -1,6 +1,6 @@
 package name.mtkachev.chap02.boolsets
 
-class SetMonoids {
+object SetMonoids {
   implicit def setUnionMonoid[A]: Monoid[Set[A]] =
     new Monoid[Set[A]] {
       def combine(a: Set[A], b: Set[A]) = a ++ b

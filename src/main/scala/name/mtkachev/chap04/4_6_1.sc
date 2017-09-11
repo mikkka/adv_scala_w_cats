@@ -58,3 +58,8 @@ val writer4 = writer1.mapBoth { (log, result) =>
 val writer5 = writer1.reset
 
 val writer6 = writer1.swap
+
+
+10.pure[Logged].flatMap(_ => Vector("a", "b", "c").tell)
+123.writer(Vector("msg1", "msg2", "msg3")).map (x => x + 321)
+

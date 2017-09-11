@@ -15,7 +15,7 @@ val greetAndFeed: Reader[Cat, String] =
   for {
     msg1 <- greetKitty
     msg2 <- feedKitty
-  } yield s"${msg1} ${msg2}"
+  } yield s"${msg1}! ${msg2}"
 
 
 greetAndFeed(Cat("Sotona", "human flesh"))

@@ -24,16 +24,16 @@ class TreeMonad extends Monad[Tree] {
       case Branch(l, r) =>
         branch(
           flatMap(l) {
-            case Left(l)  => tailRecM(l)(f)
-            case Right(l) => pure(l)
+            case Left(_l)  => tailRecM(_l)(f)
+            case Right(_l) => pure(_l)
           },
           flatMap(r) {
-            case Left(r)  => tailRecM(r)(f)
-            case Right(r) => pure(r)
+            case Left(_r)  => tailRecM(_r)(f)
+            case Right(_r) => pure(_r)
           }
         )
       case Leaf(l)      => l match {
-        case Left(a)  => tailRecM(a)(f)
+        case Left(_a) => tailRecM(_a)(f)
         case Right(b) => leaf(b)
       }
     }

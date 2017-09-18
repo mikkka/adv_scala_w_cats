@@ -21,3 +21,26 @@ for {
   y <- b
 } yield (x + y)
 
+
+val xs: ListOption[Int] = OptionT(List(Some(41), Some(42), None))
+
+xs.map(_ + 1)
+xs.flatMap(x => OptionT(List(Option(x), Option(x))))
+
+xs
+xs.flatMap(x => OptionT(List(Option(x), None)))
+
+
+for {
+  x <- xs
+  y <- xs
+} yield (x + y)
+
+
+//Monad[List].pure()
+
+OptionT(
+  xs.value.flatMap{optX =>
+    optX.fold(Monad[List].pure[Option[Int]](None))(x => List(Option(x), Option(x)))
+  }
+)

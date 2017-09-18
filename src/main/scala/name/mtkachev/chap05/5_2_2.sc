@@ -1,10 +1,14 @@
+import cats.Functor
 import cats.data.OptionT
 import cats.instances.either._
 import cats.syntax.applicative._
 
+
 type Error = String
 type ErrorOr[A] = Either[Error, A]
 type ErrorOptionOr[A] = OptionT[ErrorOr, A]
+
+Functor[ErrorOr]
 
 val result1 = 41.pure[ErrorOptionOr]
 val result2 = result1.flatMap(x => (x + 1).pure[ErrorOptionOr])

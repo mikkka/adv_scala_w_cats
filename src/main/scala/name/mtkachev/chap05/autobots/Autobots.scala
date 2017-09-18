@@ -34,6 +34,7 @@ object Autobots {
   }
 
   def tacticalReport(ally1: String, ally2: String): String = {
+    println("fooo")
     val fres = Await.result(canSpecialMove(ally1, ally2).value, 1 second)
     fres match {
       case Right(true)  => s"$ally1 and $ally2 are ready"

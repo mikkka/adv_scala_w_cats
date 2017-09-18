@@ -22,6 +22,7 @@ def addNumbers(a: String,  b: String, c: String): Logged[Option[Int]] = {
 }
 
 
+
 val result1 = addNumbers("1", "2", "3")
 val result2 = addNumbers("1", "kek", "3")
 

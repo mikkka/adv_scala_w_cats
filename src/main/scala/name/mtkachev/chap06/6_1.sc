@@ -11,7 +11,7 @@ Cartesian.map3(
   Option(1),
   Option(2),
   Option(3)
-)(_ * _ - _)
+)(_ + _ * _)
 
 Cartesian.map3(
   Option(1),
@@ -22,7 +22,8 @@ Cartesian.map3(
 
 import cats.syntax.cartesian._
 
-Option(1) |@| Option(2)
+val bldr2 = Option(1) |@| Option(2)
+val bldr3 = bldr2 |@| Option(3)
 
 
 case class Cat(name: String, born: Int, color: String)

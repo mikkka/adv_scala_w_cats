@@ -39,3 +39,32 @@ Cartesian[ErrorOr].product(
   Left(Vector("Error 1")),
   Left(Vector("Error 2"))
 )
+
+
+import cats.Monoid
+import cats.instances.boolean._
+import cats.instances.int._
+import cats.instances.list._
+import cats.instances.string._
+import cats.syntax.cartesian._
+
+def catToTuple(cat: Cat) =
+  (cat.name, cat.yearOfBirth, cat.favoriteFoods)
+
+implicit val monoidsBldr = (Monoid[String] |@| Monoid[Int] |@| Monoid[List[String]])
+
+implicit val tMonoid: Monoid[(String, Int, List[String])] =
+  monoidsBldr.tupled
+
+implicit val catMonoid: Monoid[Cat] =
+  monoidsBldr.imap(Cat.apply)(catToTuple)
+
+Monoid[Cat].empty
+
+val garfield   = Cat("Garfield", 1978, List("Lasagne"))
+val heathcliff = Cat("Heathcliff", 1988, List("Junk Food"))
+
+import cats.syntax.monoid._
+
+("Garfield", 1978, List("Lasagne")) |+| ("Heathcliff", 1988, List("Junk Food"))
+garfield |+| heathcliff

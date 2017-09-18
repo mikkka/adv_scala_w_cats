@@ -15,6 +15,8 @@ val scalacheck = "org.scalacheck" %% "scalacheck" % "1.13.4"
 val _organization = "name.mtkachev"
 val _scalaVersion = "2.11.11"
 
+scalaVersion in ThisBuild := _scalaVersion
+
 lazy val root = (project in file(".")).
   settings(
     organization := _organization,

@@ -42,7 +42,6 @@ Cartesian[ErrorOr].product(
 
 
 import cats.Monoid
-import cats.instances.boolean._
 import cats.instances.int._
 import cats.instances.list._
 import cats.instances.string._
@@ -56,8 +55,9 @@ implicit val monoidsBldr = (Monoid[String] |@| Monoid[Int] |@| Monoid[List[Strin
 implicit val tMonoid: Monoid[(String, Int, List[String])] =
   monoidsBldr.tupled
 
+val ap = Cat.apply _
 implicit val catMonoid: Monoid[Cat] =
-  monoidsBldr.imap(Cat.apply)(catToTuple)
+  monoidsBldr.imap(ap)(catToTuple)
 
 Monoid[Cat].empty
 

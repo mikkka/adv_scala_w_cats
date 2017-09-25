@@ -8,40 +8,35 @@ import cats.syntax.cartesian._
 import cats.instances.list._
 
 object Form {
-  def getValue(src: Map[String, String], valname: String): Either[String, String] =
-    Either.fromOption(src.get(valname), s"no val [$valname]")
+  type ErrorOr[T] = Either[String, T]
+  type ErrorsOr[T] = Validated[List[String], T]
 
-  def parseInt(str: String): Either[String, Int] =
-    Either.fromTry {
-      Try {
-        str.toInt
-      }
-    }.leftMap(_ => s"bad number '$str'")
+  def getValue(name: String)(src: Map[String, String]): ErrorOr[String] =
+    Either.fromOption(src.get(name), s"no val [$name]")
 
-  def nonBlank(str: String): Either[String, String] =
-    if (str == null || str.isEmpty) Left("null or blank") else Right(str)
+  def parseInt(name: String)(str: String): Either[String, Int] =
+    Either.fromTry { Try {str.toInt} }.leftMap(_ => s"bad number '$str'")
 
-  def nonNegative(num: Int): Either[String, Int] =
-    if (num < 0) Left(num.toString) else Right(num)
+  def nonBlank(name: String)(str: String): ErrorOr[String] =
+    Right(str).ensure(s"$name non empty")(_.nonEmpty)
 
-  def readName(vals: Map[String, String]): Either[List[String], String] =
-    (for {
-      nameStr <- getValue(vals, "name")
-      name <- nonBlank(nameStr)
-    } yield name).leftMap(x => List(x))
+  def nonNegative(name: String)(num: Int): ErrorOr[Int] =
+    Right(num).ensure(s"$name non negative")(_ > 0)
 
-  def readAge(vals: Map[String, String]): Either[List[String], Int] =
-    (for {
-      ageStr <- getValue(vals, "age")
-      age <- parseInt(ageStr)
-      posAge <- nonNegative(age)
-    } yield posAge).leftMap(x => List(x))
+  def readName(vals: Map[String, String]): ErrorsOr[String] =
+    getValue("name")(vals).
+      flatMap(nonBlank("name")).
+      leftMap(List(_)).toValidated
+
+  def readAge(vals: Map[String, String]): ErrorsOr[Int] =
+    getValue("age")(vals).
+      flatMap(parseInt("age")).
+      flatMap(nonNegative("age")).
+      leftMap(List(_)).toValidated
 
 
-  def readUser(vals: Map[String, String]): Validated[List[String], User] = {
-    val tpld = (Validated.fromEither(readName(vals)) |@| Validated.fromEither(readAge(vals))).tupled
-    val userF = (User.apply _).tupled
-    tpld map userF
+  def readUser(vals: Map[String, String]): ErrorsOr[User] = {
+    (readName(vals) |@| readAge(vals)).map(User.apply)
   }
 }
 

@@ -3,9 +3,10 @@ package name.mtkachev.chap06.formvalidation
 import scala.util.Try
 
 import cats.data.Validated
-import cats.syntax.either._
-import cats.syntax.cartesian._
 import cats.instances.list._
+
+import cats.syntax.either._
+import cats.syntax.apply._
 
 object Form {
   type ErrorOr[T] = Either[String, T]
@@ -36,8 +37,9 @@ object Form {
 
 
   def readUser(vals: Map[String, String]): ErrorsOr[User] = {
-    (readName(vals) |@| readAge(vals)).map(User.apply)
+    (readName(vals), readAge(vals)).mapN(User.apply)
   }
+
 }
 
 object FormApp extends App {

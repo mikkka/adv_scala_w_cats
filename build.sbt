@@ -5,6 +5,8 @@ val catsAll = Seq(
   "org.typelevel" %% "cats-kernel" % catsVersion
 )
 
+addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4")
+
 val _organization = "name.mtkachev"
 val _scalaVersion = "2.12.3"
 

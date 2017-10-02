@@ -6,18 +6,19 @@ import cats.data.Validated._
 import cats.syntax.semigroup._
 
 sealed trait Predicate[E, A] {
+  import Preidcate._
+
   def and(that: Predicate[E, A]): Predicate[E, A] = And(this, that)
   def or(that: Predicate[E, A]): Predicate[E, A] = Or(this, that)
 
   def apply(a: A)(implicit s: Monoid[E]): Validated[E, A] = {
     this match {
       case Pure(func) =>
-        func(a) match {
-          case Some(e) => Invalid(e)
-          case None    => Valid(a)
-        }
+        func(a)
+
       case And(lft, rgt) =>
         Cartesian[Validated[E, ?]].product(lft(a), rgt(a)).map(_ => a)
+
       case Or(lft, rgt) =>
         lft(a) match {
           case Valid(_) => Valid(a)
@@ -31,8 +32,14 @@ sealed trait Predicate[E, A] {
   }
 }
 
-final case class And[E, A](left: Predicate[E, A], right: Predicate[E, A]) extends Predicate[E, A]
+object Preidcate {
 
-final case class Or[E, A](left: Predicate[E, A], right: Predicate[E, A]) extends Predicate[E, A]
+  final case class And[E, A](left: Predicate[E, A], right: Predicate[E, A]) extends Predicate[E, A]
 
-final case class Pure[E, A](func: A => Option[E]) extends Predicate[E, A]
+  final case class Or[E, A](left: Predicate[E, A], right: Predicate[E, A]) extends Predicate[E, A]
+
+  final case class Pure[E, A](func: A => Validated[E, A]) extends Predicate[E, A]
+
+  def lift[E, A](error: E, func: A => Boolean): Predicate[E, A] =
+    Pure(a => if(func(a)) Valid(a) else Invalid(error))
+}

@@ -1,7 +1,7 @@
 package name.mtkachev.chap06
 
 object ApplyValidated {
-  import cats.Semigroup
+  import cats.{Monoid, Semigroup, Cartesian}
   import cats.data.Validated
   import cats.instances.string._
   import cats.syntax.apply._
@@ -11,6 +11,23 @@ object ApplyValidated {
 
   def apply[A: Semigroup](a: ValOr[A], b: ValOr[A]): ValOr[A] = {
     (a, b).mapN((aa, bb) => aa |+| bb)
+  }
+
+  def applyExpanded[A: Semigroup](a: ValOr[A], b: ValOr[A]): ValOr[A] = {
+    val monoidForE: Monoid[String] = cats.kernel.instances.string.catsKernelStdMonoidForString
+    val cartesian: Cartesian[ValOr] = Validated.catsDataApplicativeErrorForValidated(monoidForE)
+
+    catsSyntaxTuple2Cartesian((a, b))(cartesian).mapN((aa, bb) => aa |+| bb)
+  }
+}
+
+object ApplyValidated2 {
+  import cats.{Monoid, Semigroup, Cartesian}
+  import cats.data.Validated
+  import cats.syntax.semigroup._
+
+  def apply[E: Monoid, A: Semigroup](a: Validated[E, A], b: Validated[E, A]): Validated[E, A] = {
+    Cartesian[Validated[E, ?]].product(a, b).map(x => x._1 |+| x._2)
   }
 }
 

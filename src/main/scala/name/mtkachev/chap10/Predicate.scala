@@ -1,17 +1,17 @@
 package name.mtkachev.chap10
 
-import cats.{Cartesian, Monoid}
+import cats.{Cartesian, Semigroup}
 import cats.data.Validated
 import cats.data.Validated._
 import cats.syntax.semigroup._
 
 sealed trait Predicate[E, A] {
-  import Preidcate._
+  import Predicate._
 
   def and(that: Predicate[E, A]): Predicate[E, A] = And(this, that)
   def or(that: Predicate[E, A]): Predicate[E, A] = Or(this, that)
 
-  def apply(a: A)(implicit s: Monoid[E]): Validated[E, A] = {
+  def apply(a: A)(implicit s: Semigroup[E]): Validated[E, A] = {
     this match {
       case Pure(func) =>
         func(a)
@@ -32,7 +32,7 @@ sealed trait Predicate[E, A] {
   }
 }
 
-object Preidcate {
+object Predicate {
 
   final case class And[E, A](left: Predicate[E, A], right: Predicate[E, A]) extends Predicate[E, A]
 
